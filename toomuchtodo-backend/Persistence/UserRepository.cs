@@ -17,8 +17,8 @@ public class UserRepository : IUserRepository
         _context.SaveChanges();
     }
 
-    public User GetById(int id)
+    public User? GetById(int id)
     {
-        return _context.Users.FirstOrDefault(u => u.id == id);
+        return _context.Users.Find(id);
     }
 }
