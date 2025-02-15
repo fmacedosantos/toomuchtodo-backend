@@ -1,0 +1,6 @@
+﻿services:
+  toomuchtodo-backend:
+    image: toomuchtodo-backend
+    build:
+      context: .
+      dockerfile: toomuchtodo-backend/Dockerfile

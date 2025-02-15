@@ -1,0 +1,6 @@
+@toomuchtodo_backend_HostAddress = http://localhost:5258
+
+GET {{toomuchtodo_backend_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
