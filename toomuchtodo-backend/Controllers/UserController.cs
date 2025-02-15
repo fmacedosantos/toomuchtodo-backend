@@ -16,7 +16,7 @@ public class UserController : ControllerBase
     }
     
     [HttpPost]
-    public IActionResult Add(UserViewModel userViewModel)
+    public IActionResult Add([FromForm] UserViewModel userViewModel)
     {
         var user = new User(userViewModel.Username,userViewModel.Email, userViewModel.Password);
         
