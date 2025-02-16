@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using toomuchtodo_backend.Models;
+using toomuchtodo_backend.Utils;
 using toomuchtodo_backend.ViewModels;
 
 namespace toomuchtodo_backend.Controllers;
@@ -19,11 +20,13 @@ public class UserController : ControllerBase
     [HttpPost]
     public IActionResult Add([FromForm] UserViewModel userViewModel)
     {
-        var user = new User(userViewModel.Username,userViewModel.Email, userViewModel.Password);
+        var hashedPassword = PasswordHasher.HashPassword(userViewModel.Password);
+        
+        var user = new User(userViewModel.Username,userViewModel.Email, hashedPassword);
         
         _userRepository.Add(user);
         
-        return Ok();
+        return Ok("Usuário cadastrado com sucesso");
     }
 
     [Authorize]
