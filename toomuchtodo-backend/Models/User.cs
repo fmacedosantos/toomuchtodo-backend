@@ -18,4 +18,10 @@ public class User
         this.email = email ?? throw new ArgumentNullException(nameof(email));
         this.password = password ?? throw new ArgumentNullException(nameof(password));
     }
+
+    public User(string email, string password)
+    {
+        this.email = email ?? throw new ArgumentNullException(nameof(email));
+        this.password = password ?? throw new ArgumentNullException(nameof(password));
+    }
 }

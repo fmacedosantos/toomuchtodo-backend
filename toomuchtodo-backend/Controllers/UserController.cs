@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using toomuchtodo_backend.Models;
 using toomuchtodo_backend.ViewModels;
@@ -25,6 +26,7 @@ public class UserController : ControllerBase
         return Ok();
     }
 
+    [Authorize]
     [HttpGet("{id}")]
     public IActionResult GetById(int id)
     {
