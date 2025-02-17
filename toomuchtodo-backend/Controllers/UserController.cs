@@ -18,17 +18,17 @@ public class UserController : ControllerBase
     }
     
     [HttpPost]
-    public IActionResult Add([FromBody] UserViewModel userViewModel)
+    public IActionResult Add([FromBody] UserViewModel model)
     {
-        if (_userRepository.GetByEmail(userViewModel.Email) != null)
+        if (_userRepository.GetByEmail(model.Email) != null)
             return Conflict("Email já cadastrado");
 
-        if (_userRepository.GetByUsername(userViewModel.Username) != null)
+        if (_userRepository.GetByUsername(model.Username) != null)
             return Conflict("Username já cadastrado");
         
-        var hashedPassword = PasswordHasher.HashPassword(userViewModel.Password);
+        var hashedPassword = PasswordHasher.HashPassword(model.Password);
         
-        var user = new User(userViewModel.Username,userViewModel.Email, hashedPassword);
+        var user = new User(model.Username,model.Email, hashedPassword);
         
         _userRepository.Add(user);
         
@@ -56,7 +56,7 @@ public class UserController : ControllerBase
 
     [Authorize]
     [HttpPut("{id}")]
-    public IActionResult UpdatePassword(int id, [FromBody] UpdatePasswordViewModel updatePasswordViewModel)
+    public IActionResult UpdatePassword(int id, [FromBody] UpdatePasswordViewModel model)
     {
         int tokenUserId = int.Parse(User.FindFirst("userId")?.Value);
         
@@ -68,10 +68,10 @@ public class UserController : ControllerBase
         if (user == null)
             return NotFound();
         
-        if (!PasswordHasher.VerifyHashedPassword(updatePasswordViewModel.OldPassword, user.password))
+        if (!PasswordHasher.VerifyHashedPassword(model.OldPassword, user.password))
             return BadRequest("Senha atual incorreta");
         
-        user.UpdatePassword(PasswordHasher.HashPassword(updatePasswordViewModel.NewPassword));
+        user.UpdatePassword(PasswordHasher.HashPassword(model.NewPassword));
         
         _userRepository.Update(user);
         

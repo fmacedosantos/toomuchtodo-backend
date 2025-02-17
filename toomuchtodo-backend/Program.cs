@@ -53,6 +53,7 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 builder.Services.AddTransient<IUserRepository, UserRepository>(); // Injeta a dependência de usuário
+builder.Services.AddTransient<ITaskRepository, TaskRepository>(); // Injeta a dependência de tarefa
 builder.Services.AddControllers(); // Registra os controllers
 
 var key = Encoding.ASCII.GetBytes(Key.Secret);
