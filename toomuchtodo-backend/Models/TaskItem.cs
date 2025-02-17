@@ -10,6 +10,7 @@ public class TaskItem
     public int id { get; private set; }
     public int user_id { get; private set; }
     [Required]
+    [StringLength(255)]
     public string title { get; private set; }
     public string? description { get; private set; }
     public bool is_completed { get; private set; } = false;
