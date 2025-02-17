@@ -102,4 +102,6 @@ app.UseCors("CorsPolicy");
 
 app.MapControllers();
 
+app.MapGet("/", () => Results.Redirect("/swagger"));
+
 app.Run();
