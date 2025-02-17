@@ -18,7 +18,7 @@ public class UserController : ControllerBase
     }
     
     [HttpPost]
-    public IActionResult Add([FromForm] UserViewModel userViewModel)
+    public IActionResult Add([FromBody] UserViewModel userViewModel)
     {
         var hashedPassword = PasswordHasher.HashPassword(userViewModel.Password);
         
@@ -33,6 +33,11 @@ public class UserController : ControllerBase
     [HttpGet("{id}")]
     public IActionResult GetById(int id)
     {
+        int tokenUserId = int.Parse(User.FindFirst("userId")?.Value);
+
+        if (id != tokenUserId)
+            return Forbid();
+        
         var user = _userRepository.GetById(id);
     
         if (user == null)
@@ -41,5 +46,48 @@ public class UserController : ControllerBase
         }
     
         return Ok(user);
+    }
+
+    [Authorize]
+    [HttpPut("{id}")]
+    public IActionResult UpdatePassword(int id, [FromBody] UpdatePasswordViewModel updatePasswordViewModel)
+    {
+        int tokenUserId = int.Parse(User.FindFirst("userId")?.Value);
+        
+        if (id != tokenUserId)
+            return Forbid();
+        
+        var user = _userRepository.GetById(id);
+        
+        if (user == null)
+            return NotFound();
+        
+        if (!PasswordHasher.VerifyHashedPassword(updatePasswordViewModel.OldPassword, user.password))
+            return BadRequest("Senha atual incorreta");
+        
+        user.UpdatePassword(PasswordHasher.HashPassword(updatePasswordViewModel.NewPassword));
+        
+        _userRepository.Update(user);
+        
+        return Ok("Senha atualizada com sucesso");
+    }
+
+    [Authorize]
+    [HttpDelete("{id}")]
+    public IActionResult Delete(int id)
+    {
+        int tokenUserId = int.Parse(User.FindFirst("userId")?.Value);
+        
+        if (id != tokenUserId)
+            return Forbid();
+        
+        var user = _userRepository.GetById(id);
+        
+        if (user == null)
+            return NotFound();
+        
+        _userRepository.Delete(user);
+
+        return Ok("Usuário deletado com sucesso");
     }
 }
