@@ -84,7 +84,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("CorsPolicy", policy =>
     {
-        policy.WithOrigins("https://toomuchtodo-frontend.vercel.app")
+        policy.WithOrigins("https://toomuchtodo.vercel.app")
               .AllowAnyMethod()
               .AllowAnyHeader();
     });
