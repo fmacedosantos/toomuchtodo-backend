@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using toomuchtodo_backend.Models;
 using toomuchtodo_backend.Services;
+using toomuchtodo_backend.Utils;
+using toomuchtodo_backend.ViewModels;
 
 namespace toomuchtodo_backend.Controllers;
 
@@ -8,16 +10,25 @@ namespace toomuchtodo_backend.Controllers;
 [Route("api/v1/[controller]")]
 public class AuthController : ControllerBase
 {
-    
-    [HttpPost]
-    public IActionResult Auth(string email, string password)
+    private readonly IUserRepository _userRepository;
+
+    public AuthController(IUserRepository userRepository)
     {
-        if (email == "admin" && password == "admin")
+        _userRepository = userRepository;
+    }
+
+    [HttpPost("login")]
+    public IActionResult Login([FromBody] LoginViewModel login)
+    {
+        var user = _userRepository.GetByEmail(login.Email);
+
+        if (user == null || !PasswordHasher.VerifyHashedPassword(login.Password, user.password))
         {
-            var token = TokenService.GenerateToken(new User(email, password));
-            return Ok(token);
+            return Unauthorized("Usuário ou senha incorretos");
         }
+
+        var token = TokenService.GenerateToken(user);
         
-        return BadRequest("Usuário ou senha incorretos");
+        return Ok(token);
     }
 }
