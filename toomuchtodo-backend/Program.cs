@@ -13,16 +13,16 @@ var builder = WebApplication.CreateBuilder(args);
 // Carrega as variáveis do arquivo .env
 Env.Load();
 
-// Substitui os placeholders na string de conexão
+// Configura a conexão, serviços, etc.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     .Replace("{DB_HOST}", Environment.GetEnvironmentVariable("DB_HOST"))
     .Replace("{DB_NAME}", Environment.GetEnvironmentVariable("DB_NAME"))
     .Replace("{DB_USERNAME}", Environment.GetEnvironmentVariable("DB_USERNAME"))
     .Replace("{DB_PASSWORD}", Environment.GetEnvironmentVariable("DB_PASSWORD"));
 
-// Adiciona os serviços
 builder.Services.AddDbContext<ConnectionContext>(options =>
-    options.UseNpgsql(connectionString)); // Configura o DbContext com a string de conexão
+    options.UseNpgsql(connectionString));
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -52,12 +52,12 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
-builder.Services.AddTransient<IUserRepository, UserRepository>(); // Injeta a dependência de usuário
-builder.Services.AddTransient<ITaskRepository, TaskRepository>(); // Injeta a dependência de tarefa
-builder.Services.AddControllers(); // Registra os controllers
+
+builder.Services.AddTransient<IUserRepository, UserRepository>();
+builder.Services.AddTransient<ITaskRepository, TaskRepository>();
+builder.Services.AddControllers();
 
 var key = Encoding.ASCII.GetBytes(Key.Secret);
-
 builder.Services.AddAuthentication(x =>
 {
     x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -80,6 +80,16 @@ builder.Services.Configure<RouteOptions>(options =>
     options.LowercaseUrls = true;
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsPolicy", policy =>
+    {
+        policy.WithOrigins("https://toomuchtodo-frontend.vercel.app")
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+
 var app = builder.Build();
 
 // Configura o pipeline HTTP
@@ -88,7 +98,8 @@ app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
-// Mapeia as rotas dos controllers
+app.UseCors("CorsPolicy");
+
 app.MapControllers();
 
 app.Run();
