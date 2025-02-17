@@ -75,6 +75,11 @@ builder.Services.AddAuthentication(x =>
     };
 });
 
+builder.Services.Configure<RouteOptions>(options => 
+{
+    options.LowercaseUrls = true;
+});
+
 var app = builder.Build();
 
 // Configura o pipeline HTTP
