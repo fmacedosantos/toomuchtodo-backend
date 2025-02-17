@@ -20,6 +20,12 @@ public class UserController : ControllerBase
     [HttpPost]
     public IActionResult Add([FromBody] UserViewModel userViewModel)
     {
+        if (_userRepository.GetByEmail(userViewModel.Email) != null)
+            return Conflict("Email já cadastrado");
+
+        if (_userRepository.GetByUsername(userViewModel.Username) != null)
+            return Conflict("Username já cadastrado");
+        
         var hashedPassword = PasswordHasher.HashPassword(userViewModel.Password);
         
         var user = new User(userViewModel.Username,userViewModel.Email, hashedPassword);
